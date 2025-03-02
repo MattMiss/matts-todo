@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { useAuth } from "./context/useAuthContext";
+import { useAuth } from "./context/auth/useAuthContext";
 import Login from "./components/Login";
 import Spinner from "./components/Spinner";
 import Navbar from "./components/Navbar";
+import ToDoList from "./components/ToDoList";
 
 const App = () => {
     const { currentUser, isAuthorizing } = useAuth();
@@ -20,7 +21,7 @@ const App = () => {
         <div className="min-h-screen bg-gray-100">
             <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
             <div className="p-4">
-                {activeTab === "list" && <p>My To-Do List</p>}
+                {activeTab === "list" && <ToDoList />}
             </div>
         </div>
     );

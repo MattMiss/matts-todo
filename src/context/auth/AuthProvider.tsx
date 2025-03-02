@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { AuthContext } from "./authContext";
-import { auth } from "../firebase";
-import Spinner from "../components/Spinner";
+import { auth } from "../../firebase";
+import Spinner from "../../components/Spinner";
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [currentUser, setCurrentUser] = useState<User | null>(null);

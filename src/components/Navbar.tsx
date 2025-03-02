@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
 import { FaBars } from "react-icons/fa";
-import { useAuth } from "../context/useAuthContext";
+import { useAuth } from "../context/auth/useAuthContext";
 
 const Navbar = ({ activeTab, setActiveTab }: { activeTab: string; setActiveTab: (tab: string) => void }) => {
     const { currentUser } = useAuth();
