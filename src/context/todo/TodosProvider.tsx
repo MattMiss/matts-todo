@@ -37,7 +37,7 @@ const TodosProvider = ({ children }: { children: React.ReactNode }) => {
 
     // Mutation to add a new todo
     const addTodoMutation = useMutation({
-        mutationFn: async ({ text, categoryId }: { text: string; categoryId: string | undefined }) => {
+        mutationFn: async ({ text, categoryId, urgency }: { text: string; categoryId: string | undefined, urgency: number }) => {
             if (!currentUser) throw new Error("User not authenticated");
 
             const userId = currentUser.uid;
@@ -48,6 +48,7 @@ const TodosProvider = ({ children }: { children: React.ReactNode }) => {
                     createdAt: Date.now(),
                     userId,
                     categoryId: categoryId || null, // Optional category association
+                    urgency
                 });
             } catch (error) {
                 console.error("Error adding todo:", error);
@@ -65,13 +66,14 @@ const TodosProvider = ({ children }: { children: React.ReactNode }) => {
 
     // Mutation to update an existing todo
     const updateTodoMutation = useMutation({
-        mutationFn: async ({ id, text, categoryId }: { id: string, text: string; categoryId: string | undefined }) => {
+        mutationFn: async ({ id, text, categoryId, urgency }: { id: string, text: string; categoryId: string | undefined, urgency: number }) => {
             if (!currentUser) throw new Error("User not authenticated");
 
             try {
                 await updateDoc(doc(db, "todos", id), {
                     text,
                     categoryId: categoryId || null, 
+                    urgency
                 });
             } catch (error) {
                 console.error("Error updating todo:", error);
@@ -115,8 +117,8 @@ const TodosProvider = ({ children }: { children: React.ReactNode }) => {
                 isUpdatingTodos: addTodoMutation.isPending || updateTodoMutation.isPending || deleteTodoMutation.isPending,
                 todos,
                 refreshTodos: () => queryClient.invalidateQueries({ queryKey : ["todos", currentUser?.uid]}),
-                addTodo: (text, categoryId) => addTodoMutation.mutate({text, categoryId}),
-                updateTodo: (id, text, categoryId) => updateTodoMutation.mutate({id, text, categoryId}),
+                addTodo: (text, categoryId, urgency) => addTodoMutation.mutate({text, categoryId, urgency}),
+                updateTodo: (id, text, categoryId, urgency) => updateTodoMutation.mutate({id, text, categoryId, urgency}),
                 deleteTodo: (id) => deleteTodoMutation.mutate({ id })
             }}
         >

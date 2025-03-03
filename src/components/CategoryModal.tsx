@@ -41,13 +41,13 @@ const CategoryModal = ({ isOpen, onClose }: CategoryModalProps) => {
     return (
         isOpen && (
             <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
-                <div className="bg-white p-4 rounded shadow-md w-80">
+                <div className="bg-gray-500 p-4 rounded shadow-md w-80">
                     <h2 className="text-xl mb-4">Manage Categories</h2>
 
                     <div>
                         <input
                             type="text"
-                            className="border p-2 rounded w-full mb-2"
+                            className="p-2 rounded w-full mb-2 bg-gray-600"
                             placeholder="New category..."
                             value={newCategory}
                             onChange={(e) => setNewCategory(e.target.value)}
@@ -59,7 +59,7 @@ const CategoryModal = ({ isOpen, onClose }: CategoryModalProps) => {
 
                     <ul>
                         {categories.map((category) => (
-                            <li key={category.id} className="flex justify-between items-center bg-gray-100 p-2 rounded mb-2">
+                            <li key={category.id} className="flex justify-between items-center bg-gray-600 p-2 rounded mb-2">
                                 {editingCategory?.id === category.id ? (
                                     <input
                                         value={editText}

@@ -18,7 +18,7 @@ const App = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-100">
+        <div className="min-h-screen bg-gray-700">
             <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
             <div className="p-4">
                 {activeTab === "list" && <ToDoList />}

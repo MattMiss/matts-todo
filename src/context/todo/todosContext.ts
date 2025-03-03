@@ -7,8 +7,8 @@ interface TodosContextProps {
     isUpdatingTodos: boolean;
     todos: Todo[];
     refreshTodos: () => void;
-    addTodo: (text: string, categoryId: string | undefined) => void;
-    updateTodo: (id: string, text: string, categoryId: string | undefined) => void;
+    addTodo: (text: string, categoryId: string | undefined, urgency: number) => void;
+    updateTodo: (id: string, text: string, categoryId: string | undefined, urgency: number) => void;
     deleteTodo: (id: string) => void;   
 }
 
