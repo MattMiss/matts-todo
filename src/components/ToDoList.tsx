@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaPlus, FaCaretDown, FaCaretUp, FaCheck  } from "react-icons/fa";
+import { FaPlus, FaCaretDown, FaCaretUp, FaCheck, FaEdit  } from "react-icons/fa";
 import { Todo } from "../types/types";
 import CategoryModal from "./CategoryModal";
 import TodoModal from "./TodoModal";
@@ -64,51 +64,66 @@ const ToDoList = () => {
     });
 
     return (
-        <div className="max-w-xl mx-auto bg-gray-500 p-4 rounded shadow-md  text-white">
+        <div className="max-w-xl mx-auto bg-gray-600 p-4 rounded shadow-md  text-white">
             <h2 className="text-xl font-semibold mb-4 text-white">To-Do List</h2>
 
             {/* Sorting & Grouping Controls */}
-            <div className="flex flex-row gap-2 mb-4 text-sm">
-                <div className="flex flex-1 gap-2 items-center">
-                    <label>Sort</label>
-                    <select
-                        className="w-full bg-gray-600 p-2 rounded"
-                        value={sortBy}
-                        onChange={(e) => setSortBy(e.target.value as "alphabetical" | "urgency")}
-                    >
-                        <option value="alphabetical">Name</option>
-                        <option value="urgency">Urgency</option>
-                    </select>
+            <div className="flex flex-wrap gap-2 mb-4 text-sm">
+            
+                {/* Sort Select */}
+                <div className="flex flex-1 items-center min-w-[150px]">
+                    <div className="relative w-full">
+                        <select
+                            className="w-full bg-gray-700 p-2 rounded text-center appearance-none cursor-pointer"
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value as "alphabetical" | "urgency")}
+                        >
+                            <option value="alphabetical">Sort by Name</option>
+                            <option value="urgency">Sort by Urgency</option>
+                        </select>
+                        {/* Custom dropdown arrow */}
+                        <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                            <FaCaretDown size={20} />
+                        </div>
+                    </div>
                 </div>
 
-                <div className="flex flex-1 gap-2 justify-center items-center">
-                    <label>Order:</label>
+                {/* Sort Order Button */}
+                <div className="flex flex-1 gap-2 justify-center items-center min-w-[150px]">
                     <button
-                        className="w-full bg-gray-600 text-white px-4 py-2 rounded"
+                        className="w-full bg-gray-700 text-white px-4 py-2 rounded"
                         onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
                     >
-                        {sortOrder === "asc" ? 
-                            <div className="flex gap-1 justify-center items-center">Asc <FaCaretUp size={20}/> </div>: 
-                            <div className="flex gap-1 justify-center items-center">Desc <FaCaretDown size={20}/></div>
-                            }
+                        {sortOrder === "asc" ? (
+                            <div className="flex gap-1 justify-center items-center">
+                                Ascending <FaCaretUp size={20} />
+                            </div>
+                        ) : (
+                            <div className="flex gap-1 justify-center items-center">
+                                Descending <FaCaretDown size={20} />
+                            </div>
+                        )}
                     </button>
                 </div>
 
                 {/* Group by Category Checkbox */}
-                <label className="flex flex-1 gap-2 items-center p-2 rounded cursor-pointer select-none bg-gray-600 text-white">
-                    <input
-                        type="checkbox"
-                        checked={groupByCategory}
-                        onChange={() => setGroupByCategory(!groupByCategory)}
-                        className="hidden peer"
-                    />
-                    {/* Custom Checkbox */}
-                    <div className={`w-5 h-5 bg-gray-200 rounded flex items-center justify-center peer-checked:bg-blue-500`}>
-                        {groupByCategory && <FaCheck size={14} className="text-white" />}
-                    </div>
-                    <span>Group by Category</span>
-                </label>
+                <div className="flex flex-1 gap-2 items-center p-2 rounded cursor-pointer select-none bg-gray-700 text-white justify-center min-w-[150px]">
+                    <label className="flex items-center gap-2 w-full justify-center cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={groupByCategory}
+                            onChange={() => setGroupByCategory(!groupByCategory)}
+                            className="hidden peer"
+                        />
+                        <span>Group by Category</span>
+                        {/* Custom Checkbox */}
+                        <div className={`w-4 h-4 bg-gray-200 rounded flex items-center justify-center peer-checked:bg-blue-500`}>
+                            {groupByCategory && <FaCheck size={12} className="text-white" />}
+                        </div>
+                    </label>
+                </div>
             </div>
+
 
             <div className="flex justify-between">
                 {/* Open New To-Do Modal */}
@@ -121,10 +136,10 @@ const ToDoList = () => {
 
                 {/* Manage Categories Button */}
                 <button
-                    className="bg-gray-600 text-white px-4 py-2 rounded mb-4 flex items-center gap-2"
+                    className="bg-gray-700 text-white px-4 py-2 rounded mb-4 flex items-center gap-2"
                     onClick={() => setIsCategoryModalOpen(true)}
                 >
-                    <FaPlus /> Manage Categories
+                    <FaEdit /> Categories
                 </button>
             </div>
             

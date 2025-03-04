@@ -20,7 +20,7 @@ const ToDoItem = ({ todo, categories, showCategory, onEdit, onDelete }: ToDoItem
     const urgencyLabel = urgencyLabels[todo.urgency ?? 0]; // Default to empty if no urgency
 
     return (
-        <li className="flex flex-col bg-gray-400 p-2 rounded text-gray-300">
+        <li className="flex flex-col bg-gray-500 p-2 rounded text-gray-300">
             <div className="flex justify-between items-center">
                 <span className="font-semibold text-lg text-blue-600">{todo.text}</span>
                 <div className="flex gap-2">
