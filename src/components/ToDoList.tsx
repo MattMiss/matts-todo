@@ -125,10 +125,10 @@ const ToDoList = () => {
             </div>
 
 
-            <div className="flex justify-between">
+            <div className="flex flex-wrap justify-between">
                 {/* Open New To-Do Modal */}
                 <button
-                    className="bg-blue-500 text-white px-4 py-2 rounded mb-4 flex items-center gap-2"
+                    className="bg-blue-500 text-white px-4 py-2 rounded mb-4 flex items-center gap-2 min-w-[150px]"
                     onClick={openNewTodoModal}
                 >
                     <FaPlus /> New Todo
@@ -136,7 +136,7 @@ const ToDoList = () => {
 
                 {/* Manage Categories Button */}
                 <button
-                    className="bg-gray-700 text-white px-4 py-2 rounded mb-4 flex items-center gap-2"
+                    className="bg-gray-700 text-white px-4 py-2 rounded mb-4 flex items-center gap-2 min-w-[150px]"
                     onClick={() => setIsCategoryModalOpen(true)}
                 >
                     <FaEdit /> Categories
