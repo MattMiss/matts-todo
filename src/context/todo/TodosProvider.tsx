@@ -48,7 +48,8 @@ const TodosProvider = ({ children }: { children: React.ReactNode }) => {
                     createdAt: Date.now(),
                     userId,
                     categoryId: categoryId || null, // Optional category association
-                    urgency
+                    urgency,
+                    completed: false
                 });
             } catch (error) {
                 console.error("Error adding todo:", error);
@@ -73,13 +74,36 @@ const TodosProvider = ({ children }: { children: React.ReactNode }) => {
                 await updateDoc(doc(db, "todos", id), {
                     text,
                     categoryId: categoryId || null, 
-                    urgency
+                    urgency,
                 });
             } catch (error) {
                 console.error("Error updating todo:", error);
             }
 
             //toast.success("Todo updated!");
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["todos", currentUser?.uid] });
+        },
+        onError: () => {
+            //toast.error("Failed to update todo. Please try again.");
+        },
+    });
+
+    // Mutation to mark todo as completed or not
+    const completeTodoMutation = useMutation({
+        mutationFn: async ({ id, completed }: { id: string; completed: boolean }) => {
+            if (!currentUser) throw new Error("User not authenticated");
+    
+            try {
+                await updateDoc(doc(db, "todos", id), {
+                    completed
+                });
+            } catch (error) {
+                console.error("Error updating completion status:", error);
+            }
+    
+            //toast.success(completed ? "Todo marked as complete!" : "Todo marked as incomplete!");
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["todos", currentUser?.uid] });
@@ -119,6 +143,7 @@ const TodosProvider = ({ children }: { children: React.ReactNode }) => {
                 refreshTodos: () => queryClient.invalidateQueries({ queryKey : ["todos", currentUser?.uid]}),
                 addTodo: (text, categoryId, urgency) => addTodoMutation.mutate({text, categoryId, urgency}),
                 updateTodo: (id, text, categoryId, urgency) => updateTodoMutation.mutate({id, text, categoryId, urgency}),
+                completeTodo: (id, completed) => completeTodoMutation.mutate({id, completed}),
                 deleteTodo: (id) => deleteTodoMutation.mutate({ id })
             }}
         >

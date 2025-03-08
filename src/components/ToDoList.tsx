@@ -1,23 +1,27 @@
 import { useState } from "react";
 import { FaPlus, FaCaretDown, FaCaretUp, FaCheck, FaEdit  } from "react-icons/fa";
 import { Todo } from "../types/types";
+import ToDoItem from "./ToDoItem";
 import CategoryModal from "./CategoryModal";
 import TodoModal from "./TodoModal";
-import ToDoItem from "./ToDoItem";
+import TodoActionModal from "./TodoActionModel";
 import { useTodos } from "../context/todo/useTodosContext";
 import { useCategories } from "../context/category/useCategoriesContext";
 
 const ToDoList = () => {
-    const { todos, deleteTodo } = useTodos();
+    const { todos, completeTodo, deleteTodo } = useTodos();
     const { categories } = useCategories();
     
     const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
     const [isTodoModalOpen, setIsTodoModalOpen] = useState(false);
+    const [isActionModalOpen, setIsActionModalOpen] = useState(false);
     const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
+    const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
     
     const [sortBy, setSortBy] = useState<"alphabetical" | "urgency">("alphabetical");
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
     const [groupByCategory, setGroupByCategory] = useState(false);
+    const [hideCompleted, setHideCompleted] = useState(false);
 
     const openNewTodoModal = () => {
         setEditingTodo(null);
@@ -33,6 +37,10 @@ const ToDoList = () => {
         deleteTodo(id);
     };
 
+    const handleToggleComplete = (id: string, completed: boolean) => {
+        completeTodo(id, completed);
+    };
+
     // **Sorting Logic**
     const sortTodos = (a: Todo, b: Todo) => {
         let comparison = 0;
@@ -46,15 +54,19 @@ const ToDoList = () => {
         return sortOrder === "asc" ? comparison : -comparison;
     };
 
+    // **Filter Completed & Incomplete Todos**
+    const incompleteTodos = todos.filter((todo) => !todo.completed);
+    const completedTodos = todos.filter((todo) => todo.completed);
+
     // **Grouping Logic**
     const groupedTodos = groupByCategory
-        ? todos.reduce<Record<string, Todo[]>>((groups, todo) => {
+        ? incompleteTodos.reduce<Record<string, Todo[]>>((groups, todo) => {
               const categoryName = categories.find((c) => c.id === todo.categoryId)?.text || "No Category";
               if (!groups[categoryName]) groups[categoryName] = [];
               groups[categoryName].push(todo);
               return groups;
           }, {})
-        : { All: todos };
+        : { All: incompleteTodos };
 
     // **Sort categories alphabetically, but ensure "No Category" is last**
     const sortedCategoryGroups = Object.keys(groupedTodos).sort((a, b) => {
@@ -64,8 +76,7 @@ const ToDoList = () => {
     });
 
     return (
-        <div className="max-w-xl mx-auto bg-gray-600 p-4 rounded shadow-md  text-white">
-            <h2 className="text-xl font-semibold mb-4 text-white">To-Do List</h2>
+        <div className="max-w-xl mx-auto bg-gray-800 p-4 rounded shadow-lg shadow-gray-900 text-white">
 
             {/* Sorting & Grouping Controls */}
             <div className="flex flex-wrap gap-2 mb-4 text-sm">
@@ -74,7 +85,7 @@ const ToDoList = () => {
                 <div className="flex flex-1 items-center min-w-[150px]">
                     <div className="relative w-full">
                         <select
-                            className="w-full bg-gray-700 p-2 rounded text-center appearance-none cursor-pointer"
+                            className="w-full bg-gray-600 hover:bg-gray-500 p-2 rounded text-center appearance-none cursor-pointer"
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value as "alphabetical" | "urgency")}
                         >
@@ -91,7 +102,7 @@ const ToDoList = () => {
                 {/* Sort Order Button */}
                 <div className="flex flex-1 gap-2 justify-center items-center min-w-[150px]">
                     <button
-                        className="w-full bg-gray-700 text-white px-4 py-2 rounded"
+                        className="w-full bg-gray-600 hover:bg-gray-500 text-white px-4 py-2 rounded"
                         onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
                     >
                         {sortOrder === "asc" ? (
@@ -107,7 +118,7 @@ const ToDoList = () => {
                 </div>
 
                 {/* Group by Category Checkbox */}
-                <div className="flex flex-1 gap-2 items-center p-2 rounded cursor-pointer select-none bg-gray-700 text-white justify-center min-w-[150px]">
+                <div className="flex flex-1 gap-2 items-center p-2 rounded cursor-pointer select-none bg-gray-600 hover:bg-gray-500 text-white justify-center min-w-[150px]">
                     <label className="flex items-center gap-2 w-full justify-center cursor-pointer">
                         <input
                             type="checkbox"
@@ -119,6 +130,23 @@ const ToDoList = () => {
                         {/* Custom Checkbox */}
                         <div className={`w-4 h-4 bg-gray-200 rounded flex items-center justify-center peer-checked:bg-blue-500`}>
                             {groupByCategory && <FaCheck size={12} className="text-white" />}
+                        </div>
+                    </label>
+                </div>
+
+                {/* Hide completed todos checkbox */}
+                <div className="flex flex-1 gap-2 items-center p-2 rounded cursor-pointer select-none bg-gray-600 hover:bg-gray-500 text-white justify-center min-w-[150px]">
+                    <label className="flex items-center gap-2 w-full justify-center cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={hideCompleted}
+                            onChange={() => setHideCompleted(!hideCompleted)}
+                            className="hidden peer"
+                        />
+                        <span>Hide Completed</span>
+                        {/* Custom Checkbox */}
+                        <div className={`w-4 h-4 bg-gray-200 rounded flex items-center justify-center peer-checked:bg-blue-500`}>
+                            {hideCompleted && <FaCheck size={12} className="text-white" />}
                         </div>
                     </label>
                 </div>
@@ -144,31 +172,80 @@ const ToDoList = () => {
             </div>
             
 
-            {/* To-Do List */}
+            {/* Incomplete Todos */}
             <ul className="space-y-4">
                 {groupByCategory ? (
                     sortedCategoryGroups.map((category) => (
                         <li key={category}>
-                            <h3 className="text-lg font-semibold text-gray-700 mb-2">{category}</h3>
+                            <h3 className="text-lg font-semibold text-gray-300 mb-2">{category}</h3>
                             <ul className="space-y-2">
                                 {groupedTodos[category].sort(sortTodos).map((todo) => (
-                                    <ToDoItem key={todo.id} todo={todo} categories={categories} showCategory={false} onEdit={openEditTodoModal} onDelete={handleDeleteTodo} />
+                                    <div 
+                                        key={todo.id} 
+                                        onClick={() => {
+                                            setSelectedTodo(todo);
+                                            setIsActionModalOpen(true);
+                                        }} 
+                                        className="cursor-pointer"
+                                    >
+                                        <ToDoItem todo={todo} categories={categories} showCategory={false} />
+                                    </div>
                                 ))}
                             </ul>
                         </li>
                     ))
                 ) : (
-                    todos.sort(sortTodos).map((todo) => (
-                        <ToDoItem key={todo.id} todo={todo} categories={categories} showCategory={true} onEdit={openEditTodoModal} onDelete={handleDeleteTodo} />
+                    incompleteTodos.sort(sortTodos).map((todo) => (
+                        <div 
+                            key={todo.id} 
+                            onClick={() => {
+                                setSelectedTodo(todo);
+                                setIsActionModalOpen(true);
+                            }} 
+                            className="cursor-pointer"
+                        >
+                            <ToDoItem todo={todo} categories={categories} showCategory={true} />
+                        </div>
                     ))
                 )}
             </ul>
+
+            {/* Completed Todos */}
+            {!hideCompleted && completedTodos.length > 0 && (
+                <div className="mt-6">
+                    <h3 className="text-lg font-semibold text-gray-300 mb-2">Completed Todos</h3>
+                    <ul className="space-y-2">
+                        {completedTodos.sort(sortTodos).map((todo) => (
+                            <div 
+                                key={todo.id} 
+                                onClick={() => {
+                                    setSelectedTodo(todo);
+                                    setIsActionModalOpen(true);
+                                }} 
+                                className="cursor-pointer"
+                            >
+                                <ToDoItem todo={todo} categories={categories} showCategory={true} />
+                            </div>
+                        ))}
+                    </ul>
+                </div>
+            )}
 
             {/* Todo Modal */}
             <TodoModal isOpen={isTodoModalOpen} onClose={() => setIsTodoModalOpen(false)} onSave={() => {}} currentTodo={editingTodo} />
 
             {/* Category Modal */}
             <CategoryModal isOpen={isCategoryModalOpen} onClose={() => setIsCategoryModalOpen(false)} />
+
+            {/* Action Modal for Todo */}
+            <TodoActionModal
+                isOpen={isActionModalOpen}
+                onClose={() => setIsActionModalOpen(false)}
+                todo={selectedTodo}
+                onToggleComplete={handleToggleComplete}
+                onEdit={openEditTodoModal}
+                onDelete={handleDeleteTodo}
+            />
         </div>
     );
 };

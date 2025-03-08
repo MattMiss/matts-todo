@@ -17,7 +17,6 @@ const TodoModal = ({ isOpen, onClose, onSave, currentTodo }: TodoModalProps) => 
     const [categoryId, setCategoryId] = useState<string | null>(null);
     const [urgency, setUrgency] = useState<number>(1);
 
-
     useEffect(() => {
         if (isOpen) {
             if (currentTodo) {
@@ -51,18 +50,21 @@ const TodoModal = ({ isOpen, onClose, onSave, currentTodo }: TodoModalProps) => 
 
     return (
         isOpen && (
-            <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
-                <div className="bg-gray-500 p-4 rounded shadow-md w-80">
+            <div className="fixed inset-0 bg-gray-900/90 flex justify-center items-center">
+                <div className="bg-gray-700 px-10 py-6 rounded shadow-md w-md">
                     <h2 className="text-xl mb-4">{currentTodo ? "Edit Todo" : "New Todo"}</h2>
 
+                    {/* Todo Text Input */}
                     <input
                         type="text"
-                        className="p-2 rounded w-full mb-2 bg-gray-600"
+                        className="p-2 rounded w-full mb-4 bg-gray-600"
                         placeholder="Enter todo..."
                         value={text}
                         onChange={(e) => setText(e.target.value)}
                     />
 
+                    {/* Category Selection */}
+                    <label className="block text-gray-300 mb-1">Category</label>
                     <select
                         className="p-2 rounded w-full mb-4 bg-gray-600"
                         value={categoryId || ""}
@@ -75,25 +77,34 @@ const TodoModal = ({ isOpen, onClose, onSave, currentTodo }: TodoModalProps) => 
                             </option>
                         ))}
                     </select>
-                    <select
-                        className="p-2 rounded w-full mb-4 bg-gray-600"
-                        value={urgency}
-                        onChange={(e) => setUrgency(parseInt(e.target.value))}
-                    >
-                        <option value={1}>Low</option>
-                        <option value={2}>Medium</option>
-                        <option value={3}>High</option>
-                        
-                    </select>
 
-                    <div className="flex justify-between">
-                        <button className="bg-gray-700 text-white px-4 py-2 rounded" onClick={handleCancel}>
-                            Cancel
-                        </button>
-                        <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handleSave}>
-                            {currentTodo ? "Update" : "Add"}
-                        </button>
+                    {/* Urgency Selection as Buttons */}
+                    <label className="block text-gray-300 mb-1">Urgency</label>
+                    <div className="flex justify-between gap-4 mb-4">
+                        {[
+                            { value: 1, label: "Low", color: "bg-green-500" },
+                            { value: 2, label: "Medium", color: "bg-yellow-500" },
+                            { value: 3, label: "High", color: "bg-red-500" },
+                        ].map(({ value, label, color }) => (
+                            <button
+                                key={value}
+                                className={`px-4 py-2 rounded w-full text-white ${color} ${
+                                    urgency === value ? "border-3 border-blue-500" : "opacity-40"
+                                }`}
+                                onClick={() => setUrgency(value)}
+                            >
+                                {label}
+                            </button>
+                        ))}
                     </div>
+
+                    {/* Action Buttons */}
+                    <button className="bg-blue-500 text-white px-4 py-2 rounded w-full mt-2" onClick={handleSave}>
+                        {currentTodo ? "Update" : "Add"}
+                    </button>
+                    <button className="bg-red-500 text-white px-4 py-2 rounded w-full mt-4" onClick={handleCancel}>
+                        Cancel
+                    </button>
                 </div>
             </div>
         )

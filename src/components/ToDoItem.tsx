@@ -1,39 +1,33 @@
-import { FaTrash, FaEdit } from "react-icons/fa";
 import { Todo, Category } from "../types/types";
 
 interface ToDoItemProps {
     todo: Todo;
     categories: Category[];
     showCategory: boolean;
-    onEdit: (todo: Todo) => void;
-    onDelete: (id: string) => void;
 }
 
-const urgencyLabels: Record<number, string> = {
-    1: "Low",
-    2: "Medium",
-    3: "High",
+const urgencyColors: Record<number, string> = {
+    1: "bg-green-500",  // Low Urgency
+    2: "bg-yellow-500", // Medium Urgency
+    3: "bg-red-500",    // High Urgency
 };
 
-const ToDoItem = ({ todo, categories, showCategory, onEdit, onDelete }: ToDoItemProps) => {
+const ToDoItem = ({ todo, categories, showCategory }: ToDoItemProps) => {
     const categoryName = categories.find((c) => c.id === todo.categoryId)?.text || "No Category";
-    const urgencyLabel = urgencyLabels[todo.urgency ?? 0]; // Default to empty if no urgency
+    const urgencyColor = urgencyColors[todo.urgency ?? 0] || "bg-transparent"; // Default to no color
 
     return (
-        <li className="flex flex-col bg-gray-500 p-2 rounded text-gray-300">
-            <div className="flex justify-between items-center">
-                <span className="font-semibold text-lg text-blue-600">{todo.text}</span>
-                <div className="flex gap-2">
-                    <button className="text-blue-500" onClick={() => onEdit(todo)}>
-                        <FaEdit />
-                    </button>
-                    <button onClick={() => onDelete(todo.id)} className="text-red-500">
-                        <FaTrash />
-                    </button>
-                </div>
+        <li className={`relative flex flex-col bg-gray-700 p-2 rounded text-gray-300 ${todo.completed ? 'opacity-50' : ''}`}>
+            {/* Urgency Line */}
+            <div className={`absolute left-0 top-0 h-full w-2 ${urgencyColor} rounded-l`}></div>
+
+            {/* Todo Content */}
+            <div className="pl-3">
+                <span className="font-semibold text-lg text-sky-400">{todo.text}</span>
+                {showCategory && todo.categoryId && (
+                    <div className="text-sm font-semibold text-gray-400 mt-1">{categoryName}</div>
+                )}
             </div>
-            {showCategory && todo.categoryId && <span className="text-sm font-semibold">Category: {categoryName}</span>}
-            {todo.urgency && <span className="text-sm font-semibold">Urgency: {urgencyLabel}</span>}
         </li>
     );
 };

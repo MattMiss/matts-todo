@@ -4,6 +4,7 @@ export type Todo = {
     text: string;
     createdAt: number;
     urgency: number;
+    completed: boolean;
     categoryId?: string;
 }
 

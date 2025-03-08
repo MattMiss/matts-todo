@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { FaCheck, FaEdit, FaTrash, FaTimes } from "react-icons/fa";
 import { Category } from "../types/types";
 import { useCategories } from "../context/category/useCategoriesContext";
 
@@ -40,8 +41,8 @@ const CategoryModal = ({ isOpen, onClose }: CategoryModalProps) => {
 
     return (
         isOpen && (
-            <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
-                <div className="bg-gray-500 p-4 rounded shadow-md w-80">
+            <div className="fixed inset-0 bg-gray-900/90 flex justify-center items-center">
+                <div className="bg-gray-700 px-10 py-6 rounded shadow-md w-md">
                     <h2 className="text-xl mb-4">Manage Categories</h2>
 
                     <div>
@@ -72,27 +73,31 @@ const CategoryModal = ({ isOpen, onClose }: CategoryModalProps) => {
                                 <div className="flex gap-2">
                                     {editingCategory?.id === category.id ? (
                                         <>
-                                            <button className="text-green-600" onClick={handleUpdateCategory}>
-                                                ✅
+                                            <button className="text-white" onClick={handleUpdateCategory}>
+                                                <FaCheck size={18}/>
                                             </button>
-                                            <button className="text-gray-600" onClick={handleCancelEdit}>
-                                                ❌
+                                            <button className="text-white" onClick={handleCancelEdit}>
+                                                <FaTimes size={22} />
                                             </button>
                                         </>
                                     ) : (
-                                        <button
-                                            className="text-blue-600"
-                                            onClick={() => {
-                                                setEditingCategory(category);
-                                                setEditText(category.text);
-                                            }}
-                                        >
-                                            ✏️
-                                        </button>
+                                        <>
+                                            <button
+                                                className="text-white"
+                                                onClick={() => {
+                                                    setEditingCategory(category);
+                                                    setEditText(category.text);
+                                                }}
+                                            >
+                                                <FaEdit size={20}/>
+                                            </button>
+                                            <button className="text-white" onClick={() => deleteCategory(category.id)}>
+                                                <FaTrash size={18}/>
+                                            </button>
+                                        </>
+                                        
                                     )}
-                                    <button className="text-red-600" onClick={() => deleteCategory(category.id)}>
-                                        🗑️
-                                    </button>
+                                    
                                 </div>
                             </li>
                         ))}

@@ -9,6 +9,7 @@ interface TodosContextProps {
     refreshTodos: () => void;
     addTodo: (text: string, categoryId: string | undefined, urgency: number) => void;
     updateTodo: (id: string, text: string, categoryId: string | undefined, urgency: number) => void;
+    completeTodo: (id: string, completed: boolean) => void;
     deleteTodo: (id: string) => void;   
 }
 
